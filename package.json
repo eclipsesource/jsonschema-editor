@@ -1,0 +1,40 @@
+{
+  "name": "@eclipsesource/jsonschema-editor",
+  "private": false,
+  "version": "0.0.1",
+  "description": "Editor for JSON Schemata",
+  "repository": "https://github.com/eclipsesource/jsonschema-editor",
+  "bugs": "https://github.com/eclipsesource/jsonschema-editor/issues",
+  "license": "MIT",
+  "dependencies": {
+    "@eclipsesource/jsoneditor": "file:../../jsoneditor",
+    "jsonforms": "next"
+  },
+  "devDependencies": {
+    "awesome-typescript-loader": "^3.2.2",
+    "copy-webpack-plugin": "^4.0.1",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-sourcemaps": "^2.6.0",
+    "jquery": "^3.2.1",
+    "lite-server": "^2.3.0",
+    "materialize-css": "^0.100.1",
+    "ncp": "^2.0.0",
+    "source-map-loader": "^0.1.6",
+    "tslint": "^5.1.0",
+    "typescript": "^2.4.2",
+    "webpack": "^2.7.0",
+    "webpack-dev-server": "^2.6.1"
+  },
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "webpack --config webpack/webpack.dev.js && webpack-dev-server --config webpack/webpack.dev.js --env=dev --inline",
+    "demo": "npm run dev",
+    "build": "npm run tsc && npm run bundle",
+    "build_che": "npm run bundle && gulp che",
+    "bundle": "webpack --config webpack/webpack.build.js --env=production --display-error-details",
+    "tsc": "tsc"
+  },
+  "main": "dist/ts-build/jsonschema-editor.js",
+  "typings": "dist/ts-build/jsonschema-editor.d.ts"
+}
