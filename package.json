@@ -8,9 +8,11 @@
   "license": "MIT",
   "dependencies": {
     "@eclipsesource/jsoneditor": "file:../../jsoneditor",
-    "jsonforms": "next"
+    "jsonforms": "next",
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.74",
     "awesome-typescript-loader": "^3.2.2",
     "copy-webpack-plugin": "^4.0.1",
     "gulp": "^3.9.1",

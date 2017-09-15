@@ -1,11 +1,12 @@
 import { JsonForms, JsonSchema } from 'jsonforms';
 import { JsonEditor } from '@eclipsesource/jsoneditor';
 import '@eclipsesource/jsoneditor';
-// import './object.renderer.ts';
 // import './materialized.tree.renderer';
 import { imageMapping, labelMapping } from './jsonschema-config';
 // TODO correct schema
 import { jsonSchema } from '../local-schemas/json-schema-04';
+import './object.renderer';
+import { uischema } from '../local-schemas/ui-schema';
 
 export class JsonSchemaEditor extends HTMLElement {
   private dataObject: Object;
@@ -36,15 +37,7 @@ export class JsonSchemaEditor extends HTMLElement {
     return jsonSchema;
   }
   private registerUiSchemas(): void {
-    // const callback = uischemas => {
-    //   register(uischemas.attribute_view, 'http://www.eclipse.org/emf/2002/Ecore#//EAttribute');
-    //   register(uischemas.eclass_view, 'http://www.eclipse.org/emf/2002/Ecore#//EClass');
-    //   register(uischemas.datatype_view, 'http://www.eclipse.org/emf/2002/Ecore#//EDataType');
-    //   register(uischemas.enum_view, 'http://www.eclipse.org/emf/2002/Ecore#//EEnum');
-    //   register(uischemas.epackage_view, 'http://www.eclipse.org/emf/2002/Ecore#//EPackage');
-    //   register(uischemas.reference_view, 'http://www.eclipse.org/emf/2002/Ecore#//EReference');
-    // };
-    // this.loadFromRest('ecoreUiSchema', callback);
+    this.editor.registerDetailSchema('#jsonschema', uischema);
   }
 
   private configureLabelMapping() {
@@ -71,22 +64,17 @@ export class JsonSchemaEditor extends HTMLElement {
     // TODO comment in when configured
     // this.configureImageMapping();
     this.configureLabelMapping();
-    this.registerUiSchemas();
     this.configureSchema();
+    this.registerUiSchemas();
+    // TODO remove
+    JsonForms.uischemaRegistry.register(uischema, (schema, data) =>
+      schema.id !== undefined && schema.id === '#jsonschema' ? 2 : -1);
 
     // JsonForms.config.setIdentifyingProp('_id');
     this.editor.data = this.dataObject;
     this.appendChild(this.editor);
   }
 }
-
-// method to register ui schemas
-const register = (uischema, uri) => {
-  JsonForms.uischemaRegistry.register(uischema, (schema, data) =>
-    data.eClass === uri || schema.properties !== undefined
-    && schema.properties.eClass !== undefined
-    && schema.properties.eClass.default === uri ? 2 : -1);
-};
 
 if (!customElements.get('jsonschema-editor')) {
   customElements.define('jsonschema-editor', JsonSchemaEditor);

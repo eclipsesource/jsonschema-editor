@@ -1,15 +1,20 @@
 import {
   RankedTester, rankWith, uiTypeIs, schemaMatches, and, JsonFormsRenderer,
   Renderer, RUNTIME_TYPE, Runtime, resolveSchema,
-  ControlElement, JsonFormsElement, getElementLabelObject, JsonSchema, DataChangeListener
+  ControlElement, JsonFormsElement, JsonForms, getElementLabelObject, JsonSchema, DataChangeListener
 } from 'jsonforms';
+import * as _ from 'lodash';
+
 /**
  * Default tester for a categorization.
  * @type {RankedTester}
  */
 export const objectTester: RankedTester = rankWith(20, and(
   uiTypeIs('Control'),
-  schemaMatches(schema => schema.additionalProperties instanceof Object)
+  schemaMatches(schema => {
+    console.log(schema);
+    return schema.additionalProperties instanceof Object;
+  })
 ));
 @JsonFormsRenderer({
   selector: 'jsonforms-additionalproperties',
@@ -63,6 +68,14 @@ export class AdditionalPropertiesRenderer extends Renderer implements DataChange
     this.resolvedSchema = resolveSchema(this.dataSchema,
                                         (this.uischema as ControlElement).scope.$ref)
                                           .additionalProperties as JsonSchema;
+    if (!_.isEmpty(this.resolvedSchema.$ref)) {
+      // ref can be locally resolved
+      if (_.startsWith(this.resolvedSchema.$ref, '#')) {
+        // this.resolvedSchema = resolveSchema(JsonForms.schema, this.resolvedSchema.$ref);
+        // TODO need to make resolveSchema self contained with schema service?
+        this.resolvedSchema = resolveSchema(this.dataSchema, this.resolvedSchema.$ref);
+      }
+    }
     const header = document.createElement('div');
     header.className = 'jsonforms-additionalproperties_header';
     this.appendChild(header);
@@ -99,7 +112,9 @@ export class AdditionalPropertiesRenderer extends Renderer implements DataChange
       const button = document.createElement('button');
       button.textContent = 'Finish';
       input.oninput = () => {
+        // tslint:disable:no-shadowed-variable
         const data = this.dataService.getValue(controlElement);
+        // tslint:enable:no-shadowed-variable
         button.removeAttribute('disabled');
         validationLabel.textContent = null;
         const key = input.value;
@@ -109,7 +124,9 @@ export class AdditionalPropertiesRenderer extends Renderer implements DataChange
         }
       };
       button.onclick = () => {
+        // tslint:disable:no-shadowed-variable
         const data = this.dataService.getValue(controlElement);
+        // tslint:enable:no-shadowed-variable
         const key = input.value;
         this.addProperty(data, key);
         input.value = null;
@@ -128,7 +145,8 @@ export class AdditionalPropertiesRenderer extends Renderer implements DataChange
     removeEntry.textContent = 'Remove Entry';
     removeEntry.onclick = () => {
       if (this.selected) {
-        delete data[this.selected.textContent];
+        const dataObject = this.dataService.getValue(controlElement);
+        delete dataObject[this.selected.textContent];
         this.selected.remove();
         this.selected = undefined;
         this.cleanDetail();
@@ -207,9 +225,10 @@ export class AdditionalPropertiesRenderer extends Renderer implements DataChange
     const jsonForms = document.createElement('json-forms') as JsonFormsElement;
     if (typeof data[key] === 'object') {
       jsonForms.data = data[key];
-      jsonForms.dataSchema =
-        resolveSchema(this.dataSchema,
-                      (this.uischema as ControlElement).scope.$ref).additionalProperties;
+      // TODO re-resolvement necessary?
+      // const resolvedSchema = resolveSchema(this.dataSchema,
+      //           (this.uischema as ControlElement).scope.$ref).additionalProperties as JsonSchema;
+      jsonForms.dataSchema = this.resolvedSchema;
     } else {
       jsonForms.data = data;
       jsonForms.uiSchema = {

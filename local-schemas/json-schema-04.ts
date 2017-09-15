@@ -1,6 +1,7 @@
 export const jsonSchema = {
-  // 'id': 'http://json-schema.org/draft-04/schema#',
+  'id': '#jsonschema',
   // '$schema': 'http://json-schema.org/draft-04/schema#',
+  'title': 'JSON Schema',
   'description': 'Core schema meta-schema',
   'definitions': {
     'schemaArray': {
@@ -29,6 +30,9 @@ export const jsonSchema = {
   },
   'type': 'object',
   'properties': {
+    '$ref': {
+      'type': 'string'
+    },
     'id': {
       'type': 'string',
       'format': 'uri'
@@ -69,13 +73,13 @@ export const jsonSchema = {
       'type': 'string',
       'format': 'regex'
     },
-    'additionalItems': {
-      'anyOf': [
-        { 'type': 'boolean' },
-        { '$ref': '#' }
-      ],
-      'default': {}
-    },
+    // 'additionalItems': {
+    //   'anyOf': [
+    //     { 'type': 'boolean' }
+    //     // { '$ref': '#' }
+    //   ],
+    //   'default': {}
+    // },
     'items': {
       'anyOf': [
         { '$ref': '#' },
@@ -101,8 +105,8 @@ export const jsonSchema = {
     },
     'definitions': {
       'type': 'object',
-      'additionalProperties': { '$ref': '#' },
-      'default': {}
+      'additionalProperties': { '$ref': '#' }
+      // 'default': {}
     },
     'properties': {
       'type': 'object',
@@ -129,20 +133,21 @@ export const jsonSchema = {
       'uniqueItems': true
     },
     'type': {
-      'anyOf': [
-        { '$ref': '#/definitions/simpleTypes' },
-        {
-          'type': 'array',
-          'items': { '$ref': '#/definitions/simpleTypes' },
-          'minItems': 1,
-          'uniqueItems': true
-        }
-      ]
+      // 'anyOf':
+      // [
+         '$ref': '#/definitions/simpleTypes'
+      //   {
+      //     'type': 'array',
+      //     'items': { '$ref': '#/definitions/simpleTypes' },
+      //     'minItems': 1,
+      //     'uniqueItems': true
+      //   }
+      // ]
     },
-    'allOf': { '$ref': '#/definitions/schemaArray' },
+    // 'allOf': { '$ref': '#/definitions/schemaArray' },
     'anyOf': { '$ref': '#/definitions/schemaArray' },
-    'oneOf': { '$ref': '#/definitions/schemaArray' },
-    'not': { '$ref': '#' }
+    // 'oneOf': { '$ref': '#/definitions/schemaArray' },
+    // 'not': { '$ref': '#' }
   },
   'dependencies': {
     'exclusiveMaximum': [ 'maximum' ],
